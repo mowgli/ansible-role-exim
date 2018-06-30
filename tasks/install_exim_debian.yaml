@@ -1,0 +1,9 @@
+- name: Set the package name
+  set_fact:
+    exim_debian_package: exim4-daemon-heavy
+  when: exim_needed_features | difference(exim_light_features)
+
+- name: "Install {{ exim_debian_package }}"
+  package:
+    name: "{{ exim_debian_package }}"
+    state: present

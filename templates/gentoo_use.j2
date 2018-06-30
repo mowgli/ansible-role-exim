@@ -1,0 +1,2 @@
+{{ ansible_managed | comment }}
+mail-mta/exim {{ exim_uses | unique | sort | join(' ') }}

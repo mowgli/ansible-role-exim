@@ -1,0 +1,5 @@
+- name: Update exim
+  portage:
+    newuse: yes
+    update: yes
+    package: mail-mta/exim

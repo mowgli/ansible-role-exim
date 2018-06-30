@@ -1,0 +1,14 @@
+# Distributionsspezifische Variablen
+- name: Set Distribution-spezific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_lsb.id }}.yaml"
+    - "{{ ansible_os_family }}.yaml"
+
+- name: Ensure deinstallation of conflicting packages
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ exim_conflicting_packages }}"
+
+- include: "install_exim_{{ ansible_os_family|lower }}.yaml"

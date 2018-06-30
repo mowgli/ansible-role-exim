@@ -1,0 +1,29 @@
+- name: Compile use flags
+  set_fact:
+    exim_uses: "{{ exim_uses | union([exim_use_map[item]]) }}"
+  with_items: "{{ exim_needed_features }}"
+  when: item in exim_use_map.keys()|list
+
+- name: GnuTLS?
+  set_fact:
+    exim_uses: "{{ exim_uses | union(['-ssl', 'gnutls']) }}"
+  when: "'gnutls' in exim_needed_features"
+- name: PAM?
+  set_fact:
+    exim_uses: "{{ exim_uses | union(['-pam']) }}"
+  when: "'pam' not in exim_needed_features"
+- name: X?
+  set_fact:
+    exim_uses: "{{ exim_uses | union(['-X']) }}"
+  when: "'x' not in exim_needed_features"
+
+- name: Create exim uses
+  template:
+    dest: /etc/portage/package.use/exim
+    src: gentoo_use.j2
+  notify: Update exim
+
+- name: Finally install exim
+  package:
+    name: mail-mta/exim
+    state: present

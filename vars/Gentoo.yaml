@@ -1,0 +1,46 @@
+exim_conflicting_packages:
+  - mail-mta/nullmailer
+  - mail-mta/postfix
+  - mail-mta/courier
+  - mail-mta/ssmtp
+  - mail-mta/sendmail
+  - mail-mta/msmtp
+
+exim_use_map:
+  arc: arc
+  auth_dovecot: dovecot-sasl
+  auth_radius: radius
+  auth_sasl: sasl
+  auth_cyrus_sasl: sasl
+  dane: dane
+  dcc: dcc
+  dkim: dkim
+  dmarc: dmarc
+  dsn: dsn
+  exiscan-acl: exiscan-acl
+  content_scanning: exiscan-acl
+  idn: idn
+  ipv6: ipv6
+  lookup_dnsdb: dnsdb
+  lookup_ldap: ldap
+  lookup_mysql: mysql
+  lookup_nis: nis
+  lookup_pgsql: postgres
+  lookup_redis: redis
+  lookup_sqlite: sqlite
+  pam: pam
+  perl: perl
+  pkcs11: pkcs11
+  prdr: prdr
+  proxy: proxy
+  redis: redis
+  spf: spf
+  srs: srs
+  tpda: tpda
+  transport_lmtp: lmtp
+  transport_maildir: maildir
+  transport_mbx: mbx
+exim_uses:
+  - dkim
+  - dnsdb
+  - syslog

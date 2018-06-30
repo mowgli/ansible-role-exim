@@ -1,0 +1,4 @@
+exim_needed_features:
+  - dane
+  - transport_appendfile
+  - transport_mailstore

@@ -1,0 +1,48 @@
+######################################################################
+#                    MAIN CONFIGURATION SETTINGS                     #
+######################################################################
+
+# Macro defining the main configuration directory.
+# We do not use absolute paths.
+CONFDIR = {{ exim_config_dir }}
+ETC_MAILNAME = {{ exim_mailname | default(ansible_fqdn) }}
+
+# Decide which domain to use to add to all unqualified addresses.
+# If MAIN_PRIMARY_HOSTNAME_AS_QUALIFY_DOMAIN is defined, the primary
+# hostname is used. If not, but MAIN_QUALIFY_DOMAIN is set, the value
+# of MAIN_QUALIFY_DOMAIN is used. If both macros are not defined,
+# the first line of /etc/mailname is used.
+.ifndef MAIN_PRIMARY_HOSTNAME_AS_QUALIFY_DOMAIN
+.ifndef MAIN_QUALIFY_DOMAIN
+qualify_domain = ETC_MAILNAME
+.else
+qualify_domain = MAIN_QUALIFY_DOMAIN
+.endif
+.endif
+
+# listen on all all interfaces?
+local_interfaces = <; {% if exim_listen is string %}{{ exim_listen }}{% else %}{% if ansible_all_ipv6_addresses %}{{ exim_listen | join(' ; ') }}{% else %}{{ exim_listen | ipv4 | join(' ; ') }}{% endif %}{% endif %}
+
+LOCAL_DELIVERY = {{ exim_local_delivery }}
+
+# The gecos field in /etc/passwd holds not only the name. see passwd(5).
+gecos_pattern = ^([^,:]*)
+gecos_name = $1
+
+# always log tls_peerdn as we use TLS for outgoing connects by default
+MAIN_LOG_SELECTOR = +smtp_protocol_error +smtp_syntax_error +tls_peerdn +address_rewrite
+
+# List of domains considered local for exim. Domains not listed here
+# need to be deliverable remotely.
+domainlist local_domains = @ : localhost{% if exim_localdomains|d(False) %} : {{ exim_localdomains | join(' : ') }}{% endif %}
+
+# List of recipient domains to relay _to_. Use this list if you're -
+# for example - fallback MX or mail gateway for domains.
+domainlist relay_to_domains =
+
+# List of sender networks (IP addresses) to _unconditionally_ relay
+# _for_. If you intend to be SMTP AUTH server, you do not need to enter
+# anything here.
+hostlist relay_from_hosts = <; 127.0.0.1{% if ansible_all_ipv6_addresses %} ; ::1{% endif %}
+
+{# vim: set ft=exim: #}

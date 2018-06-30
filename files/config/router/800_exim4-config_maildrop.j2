@@ -1,0 +1,16 @@
+### router/config_maildrop
+##########################
+
+maildrop:
+  debug_print = "R: maildrop for $local_part@$domain"
+  driver = accept
+  domains = +local_domains
+  check_local_user
+  local_part_suffix = +*
+  local_part_suffix_optional
+  transport = maildrop_pipe
+  require_files = ${local_part}:+${home}/.mailfilter:+/usr/bin/maildrop
+  no_verify
+  no_expn
+
+{# vim: set ft=exim: #}

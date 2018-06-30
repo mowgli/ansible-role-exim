@@ -1,0 +1,30 @@
+### router/config_hubuser
+#########################
+
+{% if exim_smarthost and exim_readhost %}
+# It takes care to route all mail targeted to <somelocaluser@this.machine>
+# to the host where we read our mail
+#
+hub_user:
+  debug_print = "R: hub_user for $local_part@$domain"
+  driver = redirect
+  domains = +local_domains
+  data = ${local_part}@{{ exim_readhost }}
+  check_local_user
+
+# Grab the redirected mail and deliver it.
+# This is a duplicate of the smarthost router, needed because
+# {{ exim_readhost }} might end up as part of +local_domains
+#
+hub_user_smarthost:
+  debug_print = "R: hub_user_smarthost for $local_part@$domain"
+  driver = manualroute
+  domains = {{ exim_readhost }}
+  transport = remote_smtp_smarthost
+  route_list = * {{ exim_smarthost }} byname
+  host_find_failed = ignore
+  same_domain_copy_routing = yes
+  check_local_user
+
+{% endif %}
+{# vim: set ft=exim: #}

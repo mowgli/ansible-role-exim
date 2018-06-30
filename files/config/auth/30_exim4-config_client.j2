@@ -1,0 +1,41 @@
+### auth/config_client
+######################
+
+{% if exim_smarthost %}
+# The client side authentication get the passwords from CONFDIR/passwd.client.
+
+# Because AUTH PLAIN and AUTH LOGIN send the password in clear, we
+# only allow these mechanisms over encrypted connections.
+
+#cram_md5:
+#  driver = cram_md5
+#  public_name = CRAM-MD5
+#  client_name = ${extract{1}{:}{${lookup{$host}nwildlsearch{CONFDIR/passwd.client}{$value}fail}}}
+#  client_secret = ${extract{2}{:}{${lookup{$host}nwildlsearch{CONFDIR/passwd.client}{$value}fail}}}
+
+# this returns the matching line from passwd.client and doubles all ^
+PASSWDLINE = ${sg{${lookup{$host}nwildlsearch{CONFDIR/passwd.client}{$value}fail}}{\\N[\\^]\\N}{^^}}
+
+plain:
+  driver = plaintext
+  public_name = PLAIN
+  client_send = "<; ${if !eq{$tls_out_cipher}{}\
+                    {^${extract{1}{:}{PASSWDLINE}}\
+		     ^${sg{PASSWDLINE}{\\N([^:]+:)(.*)\\N}{\\$2}}\
+		   }fail}"
+
+login:
+  driver = plaintext
+  public_name = LOGIN
+  # Return empty string if not non-TLS AND looking up $host in passwd-file
+  # yields a non-empty string; fail otherwise.
+  client_send = "<; ${if and{\
+                          {!eq{$tls_out_cipher}{}}\
+                          {!eq{PASSWDLINE}{}}\
+                         }\
+                      {}fail}\
+                 ; ${extract{1}{::}{PASSWDLINE}}\
+		 ; ${sg{PASSWDLINE}{\\N([^:]+:)(.*)\\N}{\\$2}}"
+
+{% endif %}
+{# vim: set ft=exim: #}

@@ -1,6 +1,6 @@
 - name: Compile use flags
   set_fact:
-    exim_uses: "{{ exim_uses | union([exim_use_map[item]]) }}"
+    exim_uses: "{{ exim_uses + [exim_use_map[item]] }}"
   with_items: "{{ exim_needed_features }}"
   when: item in exim_use_map.keys()|list
 

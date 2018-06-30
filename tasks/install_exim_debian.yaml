@@ -7,3 +7,9 @@
   package:
     name: "{{ exim_debian_package }}"
     state: present
+
+- name: Install debian update-exim4.conf config
+  template:
+    dest: /etc/exim4/update-exim4.conf.conf
+    src: debian_update_conf.j2
+  notify: Update debian exim.conf

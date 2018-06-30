@@ -12,3 +12,139 @@
   with_items: "{{ exim_conflicting_packages }}"
 
 - include: "install_exim_{{ ansible_os_family|lower }}.yaml"
+
+- name: Create config dirs
+  file:
+    path: "{{ exim_config_dir }}/conf.d/{{ item.path }}"
+    state: directory
+  with_filetree: config
+  when:
+    - item.state == 'directory'
+  register: exim_config_dirs
+- set_fact:
+    exim_watched_dirs: "{{ exim_watched_dirs|d([]) + [item.item.path] }}"
+  with_items: "{{ exim_config_dirs.results }}"
+  when: not item.skipped|d()
+
+- block:
+    - name: Create Key
+      openssl_privatekey:
+        path: "{{ exim_config_dir }}/exim.key"
+        mode: 0640
+        owner: "{{ exim_user }}"
+        group: "{{ exim_group }}"
+    - name: Create CSR
+      openssl_csr:
+        path: "{{ exim_config_dir }}/exim.csr"
+        privatekey_path: "{{ exim_config_dir }}/exim.key"
+        common_name: "{{ exim_mailname | default(ansible_fqdn) }}"
+    - name: Create selfsign Certificate
+      openssl_certificate:
+        path: "{{ exim_config_dir }}/exim.crt"
+        csr_path: "{{ exim_config_dir }}/exim.csr"
+        privatekey_path: "{{ exim_config_dir }}/exim.key"
+        provider: selfsigned
+  when:
+    - not exim_certificate|d() or not exim_key|d()
+- block:
+    - name: Install Key
+      copy:
+        dest: "{{ exim_config_dir }}/exim.key"
+        mode: 0640
+        owner: "{{ exim_user }}"
+        group: "{{ exim_group }}"
+        content: "{{ exim_key }}"
+    - name: Install Certificate
+      copy:
+        dest: "{{ exim_config_dir }}/exim.crt"
+        content: "{{ exim_certificate }}"
+  when:
+    - exim_certificate|d()
+    - exim_key|d()
+
+- name: Configure /etc/aliases
+  template:
+    dest: /etc/aliases
+    src: aliases.j2
+
+- name: Configure /etc/mailname
+  copy:
+    dest: /etc/mailname
+    content: |
+      {{ exim_mailname | default(ansible_fqdn) }}
+
+- name: Configure /etc/email-addresses
+  template:
+    dest: /etc/email-addresses
+    src: email-addresses.j2
+
+- name: Set client passwd
+  copy:
+    dest: "{{ exim_config_dir }}/passwd.client"
+    mode: 0640
+    owner: "{{ exim_user }}"
+    group: "{{ exim_group }}"
+    content: |
+      {{ exim_smarthost }}:{{ exim_mailname | default(ansible_fqdn) }}:{{ exim_client_password }}
+  when:
+    - exim_smarthost|d()
+    - exim_client_password|d()
+
+- name: Create configuration
+  template:
+    dest: "{{ exim_config_dir }}/conf.d/{{ item.path | regex_replace('_exim4-', exim_replace_string ~ '-') | regex_replace('\\.j2$') }}"
+    src: "{{ item.src }}"
+  with_filetree: config
+  when:
+    - item.state == 'file'
+    - item.path is search('\\.j2$')
+  notify: Assemble final configuration
+  register: exim_configs_written
+- set_fact:
+    exim_protect_configs: "{{ exim_protect_configs + [exim_config_dir ~ '/conf.d/' ~ item.item.path | regex_replace('_exim4-', exim_replace_string ~ '-') | regex_replace('\\.j2$')] }}"
+  with_items: "{{ exim_configs_written.results }}"
+  when: not item.skipped|d()
+
+- name: Get list of current files
+  find:
+    paths: "{{ exim_config_dir }}/conf.d/{{ exim_watched_dirs }}"
+  register: exim_configs_current
+- name: Delete old files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ exim_configs_current.files }}"
+  when:
+    - item.isreg
+    - item.path not in exim_protect_configs
+  notify: Assemble final configuration
+
+- block:
+    - name: Recreate config snippets
+      assemble:
+        dest: "{{ exim_config_dir }}/conf.d/{{ '%02d'|format(item.0) }}-{{ item.1 }}"
+        src: "{{ exim_config_dir }}/conf.d/{{ item.1 }}"
+        ignore_hidden: yes
+        regexp: '(?<!dpkg-dist)$'
+      with_indexed_items:
+        - main
+        - acl
+        - router
+        - transport
+        - retry
+        - rewrite
+        - auth
+
+    - name: Rebuild final configuration
+      assemble:
+        dest: "{{ exim_config }}"
+        src: "{{ exim_config_dir }}/conf.d"
+        validate: '/usr/sbin/exim -C %s -bV'
+      notify: Restart exim
+  when: "ansible_os_family == 'Gentoo'"
+
+- name: Start exim
+  service:
+    name: "{{ exim_service }}"
+    state: started
+    enabled: yes

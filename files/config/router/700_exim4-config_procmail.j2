@@ -1,0 +1,22 @@
+### router/config_procmail
+##########################
+
+# This will just utilize procmail
+#
+procmail:
+  debug_print = "R: procmail for $local_part@$domain"
+  driver = accept
+  domains = +local_domains
+  check_local_user
+  local_part_suffix = +*
+  local_part_suffix_optional
+  transport = procmail_pipe
+  # emulate OR with "if exists"-expansion
+  require_files = ${local_part}:\
+                  ${if exists{/etc/procmailrc}\
+                    {/etc/procmailrc}{+${home}/.procmailrc}}:\
+                  +/usr/bin/procmail
+  no_verify
+  no_expn
+
+{# vim: set ft=exim: #}

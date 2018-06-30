@@ -1,0 +1,18 @@
+### router/config_local_user
+############################
+
+# This router matches local user mailboxes. If the router fails, the error
+# message is "Unknown user".
+#
+localuser:
+  debug_print = "R: localuser for $local_part@$domain"
+  driver = accept
+  domains = +local_domains
+  check_local_user
+  local_part_suffix = +*
+  local_part_suffix_optional
+  local_parts = ! root
+  transport = LOCAL_DELIVERY
+  cannot_route_message = Unknown user
+
+{# vim: set ft=exim: #}

@@ -1,0 +1,13 @@
+{{ ansible_managed | comment }}
+{% if exim_postmaster_address|d(False) %}
+root: {{ exim_postmaster_address }}
+{% endif %}
+{% for acc in exim_systemaccounts %}
+{% if acc not in exim_aliases %}
+{{ acc }}: root
+{% endif %}
+{% endfor %}
+
+{% for name, alias in exim_aliases|dictsort %}
+{{ name }}: {{ alias }}
+{% endfor %}

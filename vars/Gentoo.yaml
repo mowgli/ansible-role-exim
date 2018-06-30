@@ -44,3 +44,21 @@ exim_uses:
   - dkim
   - dnsdb
   - syslog
+
+exim_config: /etc/exim/exim.conf
+exim_config_dir: /etc/exim
+exim_service: exim
+exim_spool_dir: /var/spool/exim
+exim_replace_string: ''
+exim_user: mail
+exim_group: mail
+exim_systemaccounts:
+  - MAILER-DAEMON
+  - adm
+  - bin
+  - daemon
+  - exim
+  - lp
+  - mail
+  - named
+  - nobody

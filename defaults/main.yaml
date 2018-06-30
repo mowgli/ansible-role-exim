@@ -2,3 +2,13 @@ exim_needed_features:
   - dane
   - transport_appendfile
   - transport_mailstore
+  - transport_pipe
+  - transport_autoreply
+exim_smarthost: ''
+exim_listen:
+  - 127.0.0.1
+  - ::1
+exim_readhost: "{{ ansible_domain }}"
+exim_local_delivery: mail_spool
+exim_protect_configs: []
+exim_aliases: {}

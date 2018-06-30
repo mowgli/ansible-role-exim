@@ -1,0 +1,38 @@
+### acl/config_check_data
+#########################
+
+# This ACL is used after the contents of a message have been received. This
+# is the ACL in which you can test a message's headers or body, and in
+# particular, this is where you can invoke external virus or spam scanners.
+# Some suggested ways of configuring these tests are shown below, commented
+# out. Without any tests, this ACL accepts all messages. If you want to use
+# such tests, you must ensure that Exim is compiled with the content-scanning
+# extension (WITH_CONTENT_SCAN=yes in Local/Makefile).
+acl_check_data:
+   # Deny if the message contains an overlong line.  Per the standards
+   # we should never receive one such via SMTP.
+   #
+   deny
+      message    = maximum allowed line length is 998 octets, \
+                   got $max_received_linelength
+      condition  = ${if > {$max_received_linelength}{998}}
+
+   # Deny if the headers contain badly-formed addresses.
+   #
+   deny
+      !acl = acl_local_deny_exceptions
+      !verify = header_syntax
+      message = header syntax
+      log_message = header syntax ($acl_verify_message)
+
+   # require that there is a verifiable sender address in at least
+   # one of the "Sender:", "Reply-To:", or "From:" header lines.
+   deny
+      message = No verifiable sender address in message headers
+      !acl = acl_local_deny_exceptions
+      !verify = header_sender
+
+   # Accept the message.
+   accept
+
+{# vim: set ft=exim: #}

@@ -1,0 +1,187 @@
+### main/config_options
+#######################
+
+# Defines the access control list that is run when an
+# SMTP MAIL command is received.
+#
+acl_smtp_mail = acl_check_mail
+
+# Defines the access control list that is run when an
+# SMTP RCPT command is received.
+#
+acl_smtp_rcpt = acl_check_rcpt
+
+# Defines the access control list that is run when an
+# SMTP DATA command is received.
+#
+acl_smtp_data = acl_check_data
+
+# Message size limit. The default (used when MESSAGE_SIZE_LIMIT
+# is unset) is 50 MB
+.ifdef MESSAGE_SIZE_LIMIT
+message_size_limit = MESSAGE_SIZE_LIMIT
+.endif
+
+# If you are running a version of Exim that was compiled with the content-
+# scanning extension, you can cause incoming messages to be automatically
+# scanned for viruses. You have to modify the configuration in two places to
+# set this up. The first of them is here, where you define the interface to
+# your scanner. This example is typical for ClamAV; see the manual for details
+# of what to set for other virus scanners. The second modification is in the
+# acl_check_data access control list (see below).
+
+# av_scanner = clamd:/var/run/clamav/clamd.ctl
+
+# For spam scanning, there is a similar option that defines the interface to
+# SpamAssassin. You do not need to set this if you are using the default, which
+# is shown in this commented example. As for virus scanning, you must also
+# modify the acl_check_data access control list to enable spam scanning.
+
+# spamd_address = 127.0.0.1 783
+
+# Domain used to qualify unqualified recipient addresses
+# If you want unqualified recipient addresses to be qualified with a different
+# domain to unqualified sender addresses, specify the recipient domain here.
+# If this option is not set, the qualify_domain value is used.
+#
+# qualify_recipient = <value of qualify_domain>
+
+# The setting below causes Exim to do a reverse DNS lookup on all incoming
+# IP calls, in order to get the true host name. If you feel this is too
+# expensive, you can specify the networks for which a lookup is done, or
+# remove the setting entirely.
+#
+host_lookup = *
+
+# primary_hostname =
+
+# The settings below cause Exim to make RFC 1413 (ident) callbacks
+# for all incoming SMTP calls. You can limit the hosts to which these
+# calls are made, and/or change the timeout that is used. If you set
+# the timeout to zero, all RFC 1413 calls are disabled. RFC 1413 calls
+# are cheap and can provide useful information for tracing problem
+# messages, but some hosts and firewalls have problems with them.
+# This can result in a timeout instead of an immediate refused
+# connection, leading to delays on starting up SMTP sessions.
+# (The default was reduced from 30s to 5s for release 4.61. and to
+# disabled for release 4.86)
+#
+#rfc1413_hosts = *
+#rfc1413_query_timeout = 5s
+
+
+# Enable an efficiency feature.  We advertise the feature; clients
+# may request to use it.  For multi-recipient mails we then can
+# reject or accept per-user after the message is received.
+#
+prdr_enable = true
+
+# By default, exim forces a Sender: header containing the local
+# account name at the local host name in all locally submitted messages
+# that don't have the local account name at the local host name in the
+# From: header, deletes any Sender: header present in the submitted
+# message and forces the envelope sender of all locally submitted
+# messages to the local account name at the local host name.
+# The following settings allow local users to specify their own envelope sender
+# in a locally submitted message. Sender: headers existing in a locally
+# submitted message are not removed, and no automatic Sender: headers
+# are added. These settings are fine for most hosts.
+# If you run exim on a classical multi-user systems where all users
+# have local mailboxes that can be reached via SMTP from the Internet
+# with the local FQDN as the domain part of the address, you might want
+# to disable the following three lines for traceability reasons.
+local_from_check = false
+local_sender_retain = true
+untrusted_set_sender = *
+
+# By default, Exim expects all envelope addresses to be fully qualified, that
+# is, they must contain both a local part and a domain. If you want to accept
+# unqualified addresses (just a local part) from certain hosts, you can specify
+# these hosts by setting one or both of
+#
+# sender_unqualified_hosts =
+# recipient_unqualified_hosts =
+#
+# to control sender and recipient addresses, respectively. When this is done,
+# unqualified addresses are qualified using the settings of qualify_domain
+# and/or qualify_recipient (see above).
+
+# If you want Exim to support the "percent hack" for certain domains,
+# uncomment the following line and provide a list of domains. The "percent
+# hack" is the feature by which mail addressed to x%y@z (where z is one of
+# the domains listed) is locally rerouted to x@y and sent on. If z is not one
+# of the "percent hack" domains, x%y is treated as an ordinary local part. This
+# hack is rarely needed nowadays; you should not enable it unless you are sure
+# that you really need it.
+#
+# percent_hack_domains =
+#
+# As well as setting this option you will also need to remove the test
+# for local parts containing % in the ACL definition below.
+
+# When Exim can neither deliver a message nor return it to sender, it "freezes"
+# the delivery error message (aka "bounce message"). There are also other
+# circumstances in which messages get frozen. They will stay on the queue for
+# ever unless one of the following options is set.
+
+# This option unfreezes frozen bounce messages after two days, tries
+# once more to deliver them, and ignores any delivery failures.
+#
+ignore_bounce_errors_after = 2d
+
+# This option cancels (removes) frozen messages that are older than a week.
+#
+timeout_frozen_after = 7d
+
+freeze_tell = postmaster
+
+# Define spool directory
+spool_directory = {{ exim_spool_dir }}
+
+# By default, messages that are waiting on Exim's queue are all held in a
+# single directory called "input" which it itself within Exim's spool
+# directory. (The default spool directory is specified when Exim is built, and
+# is often /var/spool/exim/.) Exim works best when its queue is kept short, but
+# there are circumstances where this is not always possible. If you uncomment
+# the setting below, messages on the queue are held in 62 subdirectories of
+# "input" instead of all in the same directory. The subdirectories are called
+# 0, 1, ... A, B, ... a, b, ... z. This has two benefits: (1) If your file
+# system degrades with many files in one directory, this is less likely to
+# happen; (2) Exim can process the queue one subdirectory at a time instead of
+# all at once, which can give better performance with large queues.
+#
+# split_spool_directory = true
+
+
+# If you're in a part of the world where ASCII is not sufficient for most
+# text, then you're probably familiar with RFC2047 message header extensions.
+# By default, Exim adheres to the specification, including a limit of 76
+# characters to a line, with encoded words fitting within a line.
+# If you wish to use decoded headers in message filters in such a way
+# that successful decoding of malformed messages matters, you may wish to
+# configure Exim to be more lenient.
+#
+# check_rfc2047_length = false
+#
+# In particular, the Exim maintainers have had multiple reports of problems
+# from Russian administrators of issues until they disable this check,
+# because of some popular, yet buggy, mail composition software.
+
+# If you wish to be strictly RFC compliant, or if you know you'll be
+# exchanging email with systems that are not 8-bit clean, then you may
+# wish to disable advertising 8BITMIME.  Uncomment this option to do so.
+#
+# accept_8bitmime = false
+
+# Exim does not make use of environment variables itself. However,
+# libraries that Exim uses (e.g. LDAP) depend on specific environment settings.
+# There are two lists: keep_environment for the variables we trust, and
+# add_environment for variables we want to set to a specific value.
+# Note that TZ is handled separately by the timezone runtime option
+# and TIMEZONE_DEFAULT buildtime option.
+
+# keep_environment = ^LDAP
+# add_environment = PATH=/usr/bin::/bin
+keep_environment =
+
+{# vim: set ft=exim: #}

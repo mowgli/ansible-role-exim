@@ -1,0 +1,12 @@
+{{ ansible_managed | comment }}
+{{ exim_logdir }}/mainlog
+{{ exim_logdir }}/rejectlog
+{
+   daily
+   missingok
+   rotate 28
+   compress
+   delaycompress
+   notifempty
+   create 640 {{ exim_user }} adm
+}

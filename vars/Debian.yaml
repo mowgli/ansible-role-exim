@@ -73,3 +73,5 @@ exim_systemaccounts:
   - www
   - www-data
 exim_logdir: /var/log/exim4
+exim_logrotate_main: exim4-base
+exim_logrotate_panic: exim4-paniclog

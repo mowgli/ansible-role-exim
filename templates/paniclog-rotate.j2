@@ -1,0 +1,13 @@
+{{ ansible_managed | comment }}
+{{ exim_logdir }}/paniclog
+{
+   #size 10M
+   daily
+   missingok
+   rotate 10
+   compress
+   delaycompress
+   notifempty
+   create 640 {{ exim_user }} adm
+}
+

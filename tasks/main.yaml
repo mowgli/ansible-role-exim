@@ -148,3 +148,12 @@
     name: "{{ exim_service }}"
     state: started
     enabled: yes
+
+- name: Configure logrotate
+  template:
+    dest: "/etc/logrotate.d/{{ exim_logrotate_main }}"
+    src: logrotate.j2
+- name: Configure paniclog rotate
+  template:
+    dest: "/etc/logrotate.d/{{ exim_logrotate_panic }}"
+    src: paniclog-rotate.j2

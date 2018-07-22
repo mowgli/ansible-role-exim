@@ -63,3 +63,5 @@ exim_systemaccounts:
   - named
   - nobody
 exim_logdir: /var/log/exim
+exim_logrotate_main: exim
+exim_logrotate_panic: exim-paniclog

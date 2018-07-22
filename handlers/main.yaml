@@ -3,6 +3,7 @@
     newuse: yes
     update: yes
     package: mail-mta/exim
+  notify: Restart exim
 
 - name: Update debian exim.conf
   command: '/usr/sbin/update-exim4.conf'

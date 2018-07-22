@@ -89,6 +89,15 @@
   when:
     - exim_smarthost|d()
     - exim_client_password|d()
+- name: Set Rights  for client passwd
+  copy:
+    dest: "{{ exim_config_dir }}/passwd.client"
+    mode: 0640
+    owner: "{{ exim_user }}"
+    group: "{{ exim_group }}"
+  when:
+    - exim_smarthost|d()
+    - not exim_client_password|d()
 
 - name: Create configuration
   template:

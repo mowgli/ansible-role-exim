@@ -107,7 +107,7 @@
 
 - name: Get list of current files
   find:
-    paths: "{{ exim_config_dir }}/conf.d/{{ exim_watched_dirs }}"
+    paths: "{{ exim_watched_dirs | map('regex_replace', '^', exim_config_dir ~ '/conf.d/') | list }}"
   register: exim_configs_current
 - name: Delete old files
   file:

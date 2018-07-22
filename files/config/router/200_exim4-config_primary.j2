@@ -33,7 +33,7 @@ dnslookup:
   # ignore private rfc1918 and APIPA addresses
   ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; 192.168.0.0/16 ;\
                         172.16.0.0/12 ; 10.0.0.0/8 ; 169.254.0.0/16 ;\
-			255.255.255.255{% if ansible_all_ipv6_addresses %} ; ::1{% endif %}
+			255.255.255.255{% if ansible_all_ipv6_addresses %} ; ::1{% endif %}{{''}}
   no_more
 
 {% endif %}
@@ -72,7 +72,7 @@ smarthost:
   route_list = * {{ exim_smarthost }} byname
   host_find_failed = ignore
   same_domain_copy_routing = yes
-  ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8{% if ansible_all_ipv6_addresses %} ; ::1{% endif %}
+  ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8{% if ansible_all_ipv6_addresses %} ; ::1{% endif %}{{''}}
   no_more
 
 {% endif %}

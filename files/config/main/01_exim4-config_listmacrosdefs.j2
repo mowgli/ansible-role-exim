@@ -21,7 +21,7 @@ qualify_domain = MAIN_QUALIFY_DOMAIN
 .endif
 
 # listen on all all interfaces?
-local_interfaces = <; {% if exim_listen is string %}{{ exim_listen }}{% else %}{% if ansible_all_ipv6_addresses %}{{ exim_listen | join(' ; ') }}{% else %}{{ exim_listen | ipv4 | join(' ; ') }}{% endif %}{% endif %}
+local_interfaces = <; {% if exim_listen is string %}{{ exim_listen }}{% else %}{% if ansible_all_ipv6_addresses %}{{ exim_listen | join(' ; ') }}{% else %}{{ exim_listen | ipv4 | join(' ; ') }}{% endif %}{% endif %}{{''}}
 
 LOCAL_DELIVERY = {{ exim_local_delivery }}
 
@@ -34,7 +34,7 @@ MAIN_LOG_SELECTOR = +smtp_protocol_error +smtp_syntax_error +tls_peerdn +address
 
 # List of domains considered local for exim. Domains not listed here
 # need to be deliverable remotely.
-domainlist local_domains = @ : localhost{% if exim_localdomains|d(False) %} : {{ exim_localdomains | join(' : ') }}{% endif %}
+domainlist local_domains = @ : localhost{% if exim_localdomains|d(False) %} : {{ exim_localdomains | join(' : ') }}{% endif %}{{''}}
 
 # List of recipient domains to relay _to_. Use this list if you're -
 # for example - fallback MX or mail gateway for domains.
@@ -43,6 +43,6 @@ domainlist relay_to_domains =
 # List of sender networks (IP addresses) to _unconditionally_ relay
 # _for_. If you intend to be SMTP AUTH server, you do not need to enter
 # anything here.
-hostlist relay_from_hosts = <; 127.0.0.1{% if ansible_all_ipv6_addresses %} ; ::1{% endif %}
+hostlist relay_from_hosts = <; 127.0.0.1{% if ansible_all_ipv6_addresses %} ; ::1{% endif %}{{''}}
 
 {# vim: set ft=exim: #}

@@ -62,3 +62,4 @@ exim_systemaccounts:
   - mail
   - named
   - nobody
+exim_logdir: /var/log/exim

@@ -72,3 +72,4 @@ exim_systemaccounts:
   - uucp
   - www
   - www-data
+exim_logdir: /var/log/exim4

@@ -5,7 +5,7 @@
 # MAIN_LOG_SELECTOR == MAIN_LOG_SELECTOR +all -subject -arguments
 
 log_selector = MAIN_LOG_SELECTOR
-#log_file_path = /var/log/exim/%slog:syslog
-#syslog_duplication = false
+log_file_path = {{ exim_logdir }}/%slog:syslog
+syslog_duplication = false
 
 {# vim: set ft=exim: #}

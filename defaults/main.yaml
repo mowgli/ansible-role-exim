@@ -12,3 +12,4 @@ exim_readhost: "{{ ansible_domain }}"
 exim_local_delivery: mail_spool
 exim_protect_configs: []
 exim_aliases: {}
+exim_mail_addresses: {}

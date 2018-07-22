@@ -1,1 +1,4 @@
 {{ ansible_managed | comment }}
+{% for name, alias in exim_mail_addresses|dictsort %}
+{{ name }}: {{ alias }}
+{% endfor %}

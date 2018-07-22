@@ -90,8 +90,8 @@
     - exim_smarthost|d()
     - exim_client_password|d()
 - name: Set Rights  for client passwd
-  copy:
-    dest: "{{ exim_config_dir }}/passwd.client"
+  file:
+    path: "{{ exim_config_dir }}/passwd.client"
     mode: 0640
     owner: "{{ exim_user }}"
     group: "{{ exim_group }}"

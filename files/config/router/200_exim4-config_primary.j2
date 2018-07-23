@@ -3,7 +3,7 @@
 
 # This file holds the primary router, responsible for nonlocal mails
 
-{% if not exim_smarthost %}
+{% if not exim_smarthost and not exim_local_only|d(False) %}
 # deliver mail to the recipient if recipient domain is a domain we
 # relay for. We do not ignore any target hosts here since delivering to
 # a site local or even a link local address might be wanted here, and if
@@ -37,7 +37,7 @@ dnslookup:
   no_more
 
 {% endif %}
-{% if False %}
+{% if exim_local_only|d(False) %}
 # Stand-alone system, so generate an error for mail to a non-local domain
 #
 nonlocal:
@@ -49,7 +49,7 @@ nonlocal:
   no_more
 
 {% endif %}
-{% if exim_smarthost %}
+{% if exim_smarthost and not exim_local_only|d(False) %}
 # Send all non-local mail to a single other machine (smarthost).
 #
 # This means _ALL_ non-local mail goes to the smarthost. This will most

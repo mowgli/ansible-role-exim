@@ -13,3 +13,4 @@ exim_local_delivery: mail_spool
 exim_protect_configs: []
 exim_aliases: {}
 exim_mail_addresses: {}
+exim_relay_for: []

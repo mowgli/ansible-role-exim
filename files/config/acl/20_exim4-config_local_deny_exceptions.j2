@@ -1,5 +1,4 @@
-### acl/config_local_deny_exceptions
-####################################
+{{ template_path | regex_replace('.*/files/config/(.*)\\.j2', '\\1') | comment }}
 
 # This is used to determine whitelisted senders and hosts.
 # It checks for CONFDIR/host_local_deny_exceptions and

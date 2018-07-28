@@ -1,5 +1,4 @@
-### acl/config_check_mail
-#########################
+{{ template_path | regex_replace('.*/files/config/(.*)\\.j2', '\\1') | comment }}
 
 # This access control list is used for every MAIL command in an incoming
 # SMTP message. The tests are run in order until the address is either

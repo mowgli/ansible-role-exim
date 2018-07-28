@@ -1,11 +1,3 @@
-exim_conflicting_packages:
-  - nullmailer
-  - postfix
-  - courier-mta
-  - ssmtp
-  - sendmail-bin
-  - msmtp-mta
-
 exim_light_features:
   - crypteq
   - iconv

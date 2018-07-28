@@ -1,5 +1,4 @@
-### acl/config_check_data
-#########################
+{{ template_path | regex_replace('.*/files/config/(.*)\\.j2', '\\1') | comment }}
 
 # This ACL is used after the contents of a message have been received. This
 # is the ACL in which you can test a message's headers or body, and in

@@ -1,11 +1,3 @@
-exim_conflicting_packages:
-  - mail-mta/nullmailer
-  - mail-mta/postfix
-  - mail-mta/courier
-  - mail-mta/ssmtp
-  - mail-mta/sendmail
-  - mail-mta/msmtp
-
 exim_use_map:
   arc: arc
   auth_dovecot: dovecot-sasl

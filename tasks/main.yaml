@@ -5,12 +5,6 @@
     - "{{ ansible_lsb.id }}.yaml"
     - "{{ ansible_os_family }}.yaml"
 
-- name: Ensure deinstallation of conflicting packages
-  package:
-    name: "{{ item }}"
-    state: absent
-  with_items: "{{ exim_conflicting_packages }}"
-
 - include: "install_exim_{{ ansible_os_family|lower }}.yaml"
 
 - name: Create config dirs
@@ -44,6 +38,7 @@
         csr_path: "{{ exim_config_dir }}/exim.csr"
         privatekey_path: "{{ exim_config_dir }}/exim.key"
         provider: selfsigned
+      when: not ansible_check_mode|d(False)
   when:
     - not exim_certificate|d() or not exim_key|d()
 - block:

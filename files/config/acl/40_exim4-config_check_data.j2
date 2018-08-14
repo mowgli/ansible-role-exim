@@ -29,6 +29,7 @@ acl_check_data:
    deny
       message = No verifiable sender address in message headers
       !acl = acl_local_deny_exceptions
+      !hosts = : +relay_from_hosts
       !verify = header_sender
 
    # Accept the message.

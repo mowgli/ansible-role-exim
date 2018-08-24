@@ -1,6 +1,6 @@
 {{ ansible_managed | comment }}
 dc_eximconfig_configtype='{% if exim_smarthost %}satellite{% else %}internet{% endif %}'
-dc_other_hostnames='{% if exim_localdomains|d(False) %}{{ exim_localdomains | join(';') }}{% else %}{{ ansible_fqdn }};{{ ansible_hostname }}{% endif %}'
+dc_other_hostnames='{% if exim_localdomains|d(False) %}{{ exim_localdomains | join(';') }}{% else %}{% if exim_mailname|d(False) %}{{ exim_mailname }};{% endif %}{{ ansible_fqdn }};{{ ansible_hostname }}{% endif %}'
 dc_local_interfaces='{% if exim_listen is string %}{{ exim_listen }}{% else %}{{ exim_listen | join(' ; ') }}{% endif %}'
 dc_readhost='{{ exim_readhost }}'
 dc_relay_domains=''

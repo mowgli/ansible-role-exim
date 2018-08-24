@@ -34,7 +34,7 @@ MAIN_LOG_SELECTOR = +smtp_protocol_error +smtp_syntax_error +tls_peerdn +address
 
 # List of domains considered local for exim. Domains not listed here
 # need to be deliverable remotely.
-domainlist local_domains = @ : localhost{% if exim_localdomains|d(False) %} : {{ exim_localdomains | join(' : ') }}{% else %}{% if exim_mailname|d(False) %}{{ exim_mailname }} ; {% endif %}{{ ansible_fqdn }} ; {{ ansible_hostname }}{% endif %}{{''}}
+domainlist local_domains = <; @ ; localhost{% if exim_localdomains|d(False) %} ; {{ exim_localdomains | join(' : ') }}{% else %} ; {% if exim_mailname|d(False) %}{{ exim_mailname }} ; {% endif %}{{ ansible_fqdn }} ; {{ ansible_hostname }}{% endif %}{{''}}
 
 # List of recipient domains to relay _to_. Use this list if you're -
 # for example - fallback MX or mail gateway for domains.

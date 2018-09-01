@@ -9,7 +9,7 @@
   command: '/usr/sbin/update-exim4.conf'
   notify: Restart exim
   listen: Assemble final configuration
-  when: "ansible_os_family == 'Debian' or ansible_os_family == 'Devuan'"
+  when: "ansible_os_family == 'Debian' or ansible_lsb.id == 'Devuan'"
 
 - name: Restart exim
   service:

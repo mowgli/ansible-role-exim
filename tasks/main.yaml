@@ -5,7 +5,7 @@
     - "{{ ansible_lsb.id }}.yaml"
     - "{{ ansible_os_family }}.yaml"
 
-- include: "install_exim_{{ ansible_os_family|lower|regexp_replace(' .*', '') }}.yaml"
+- include: "install_exim_{{ ansible_lsb.id|lower }}.yaml"
 
 - name: Create config dirs
   file:

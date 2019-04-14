@@ -11,7 +11,7 @@
   file:
     path: "{{ exim_config_dir }}/conf.d/{{ item.path }}"
     state: directory
-  with_filetree: config
+  with_filetree: "{{ config }}"
   when:
     - item.state == 'directory'
   register: exim_config_dirs

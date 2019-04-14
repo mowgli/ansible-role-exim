@@ -11,7 +11,7 @@
   file:
     path: "{{ exim_config_dir }}/conf.d/{{ item.path }}"
     state: directory
-  with_filetree: 'config'
+  with_filetree: config
   when:
     - item.state == 'directory'
   register: exim_config_dirs
@@ -98,7 +98,7 @@
   template:
     dest: "{{ exim_config_dir }}/conf.d/{{ item.path | regex_replace('_exim4-', exim_replace_string ~ '-') | regex_replace('\\.j2$') }}"
     src: "{{ item.src }}"
-  with_filetree: 'config'
+  with_filetree: config
   when:
     - item.state == 'file'
     - item.path is search('\\.j2$')
